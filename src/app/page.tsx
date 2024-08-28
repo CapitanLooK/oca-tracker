@@ -1,112 +1,146 @@
-import Image from "next/image";
+"use client";
+import { useEffect, useState } from "react";
+import { Form } from "./components/Form/Form"
+import {fetchTrackingInfo} from "./utils/api/getPackage";
+import {parseXml} from "./utils/api/parseData";
+import { FadeLoader } from "react-spinners";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { thName } from "./utils/constants/constants";
 
 export default function Home() {
+  const [formData, setFormData] = useState({
+    cuil: "",
+    dni: "",
+    tracking: "",
+  });
+  const [trackingInfo, setTrackingInfo] = useState<any>(null);
+  const [trackingArray, setTrackingArray] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({ ...prevState, [name]: value }));
+  };
+
+  const onHandleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
+  const fetchData = async () => {
+    try {
+      const data = await fetchTrackingInfo({
+        clientId: formData.dni,
+        cuit: formData.cuil,
+        parcel: formData.tracking,
+      });
+      setTrackingInfo(data);
+    } catch (err) {
+      console.error("Failed to fetch tracking info", err);
+    }
+  };
+
+  useEffect(() => {
+    if (trackingInfo) {
+      console.log(trackingInfo);
+      let trackData = parseXml(trackingInfo);
+      setTrackingArray(trackData);
+    }
+  }, [trackingInfo]);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    setLoading(true);
+    event.preventDefault();
+    await fetchData();
+    setLoading(false);
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
+    <main className='min-h-screen bg-gray-900'>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      <div className="bg-purple-400 py-4 px-6 sm:px-8 flex justify-center">
+        <h1 className="text-2xl font-bold text-gray-950">
+          OCA Track
+        </h1>
       </div>
-
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+      <div className="max-w-6xl mx-auto p-6 sm:p-8 min-h-full bg-gray-900">
+        <Form
+          handleSubmit={handleSubmit}
+          handleChange={handleChange}
+          onHandleClick={onHandleClick}
+          formData={formData}
         />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+        <FadeLoader
+          color="rgb(192, 132, 252)"
+          cssOverride={{
+            position: "relative",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            marginTop: "5rem",
+            padding: "2rem",
+          }}
+          aria-label="Loading Spinner"
+          loading={loading}
+        />
+        {trackingArray.length !== 0 && (
+          <div>
+            <div className="px-6 py-8 sm:px-10 sm:py-12">
+              <h2 className="text-2xl font-bold mb-4 text-purple-400">
+                Oca Package Tracking Service
+              </h2>
+              <table className=" border-none md:max-w-screen block whitespace-nowrap overflow-x-auto lg:whitespace-normal">
+                <thead>
+                  <tr className="bg-purple-400 text-gray-950">
+                    {thName.map((name, index) => {
+                      return (
+                        <th key={index} className="px-4 py-2">{name}</th>
+                      )
+                    })}
+                  </tr>
+                </thead>
+                <tbody>
+                  {trackingArray
+                    .slice()
+                    .reverse()
+                    .map((item: any, index: number) => (
+                      <tr
+                        key={index}
+                        className=" dark:text-white text-gray-950 border-none  border-y">
+                        <td className="border border-purple-400 px-4 py-2  border-x-0  border-y">
+                          {item.Id}
+                        </td>
+                        <td className="border border-purple-400 px-4 py-2  border-x-0  border-y ">
+                          {item.NumeroEnvio}
+                        </td>
+                        <td className="border border-purple-400 px-4 py-2  border-x-0   border-y">
+                          {item.Descripcion_Motivo}
+                        </td>
+                        <td className="border border-purple-400 px-4 py-2  border-x-0   border-y">
+                          {item.Desdcripcion_Estado}
+                        </td>
+                        <td className="border border-purple-400 px-4 py-2  border-x-0   border-y">
+                          {item.SUC}
+                        </td>
+                        <td className="border border-purple-400 px-4 py-2  border-x-0   border-y">
+                          {item.fecha}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );
