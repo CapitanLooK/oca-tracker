@@ -1,14 +1,7 @@
-import React from "react";
+import { IButtonProps } from "@/app/utils/interfaces/global.interfaces";
 
-type ButtonProps = {
-  text: string;
-  onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  type?: "button" | "submit" | "reset";
-  disabled?: boolean;
-  classname?: string;
-};
 
-const Button: React.FC<ButtonProps> = ({
+const Button: React.FC<IButtonProps> = ({
   text,
   onClick,
   type,

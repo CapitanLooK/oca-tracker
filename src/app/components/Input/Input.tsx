@@ -1,17 +1,8 @@
 import React, { useState } from "react";
 import Image from "next/image";
+import { IInputProps } from "@/app/utils/interfaces/global.interfaces";
 
-type InputProps = {
-  label: string;
-  type: string;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  validate: (value: string) => string;
-  disabled?: boolean;
-  placeholder?: string;
-  classname?: string;
-};
-
-const Input: React.FC<InputProps> = ({
+const Input: React.FC<IInputProps> = ({
   label,
   placeholder,
   type,

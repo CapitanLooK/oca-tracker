@@ -3,13 +3,13 @@ import axios from "axios";
 
 // Define the fetchTrackingInfo function
 const fetchTrackingInfo = async (
-  NroDocumentoCliente: string,
-  CUIT: string,
-  Pieza: string
+  clientId: string,
+  cuit: string,
+  parcel: string
 ) => {
   try {
     const response = await axios.get(
-      `https://webservice.oca.com.ar/oep_tracking/Oep_Track.asmx/Tracking_Pieza?NroDocumentoCliente=${NroDocumentoCliente}&CUIT=${CUIT}&Pieza=${Pieza}`,
+      `https://webservice.oca.com.ar/oep_tracking/Oep_Track.asmx/Tracking_Pieza?NroDocumentoCliente=${clientId}&CUIT=${cuit}&Pieza=${parcel}`,
       {}
     );
     return response.data;
@@ -29,17 +29,17 @@ export default async function handler(
   }
 
   try {
-    const { NroDocumentoCliente, CUIT, Pieza } = req.query;
+    const { clientId, cuit, parcel } = req.query;
 
-    if (!NroDocumentoCliente || !CUIT || !Pieza) {
+    if (!clientId || !cuit || !parcel) {
       res.status(400).json({ error: "Missing parameters" });
       return;
     }
 
     const result = await fetchTrackingInfo(
-      NroDocumentoCliente as string,
-      CUIT as string,
-      Pieza as string
+      clientId as string,
+      cuit as string,
+      parcel as string
     );
 
     res.status(200).json({ result });

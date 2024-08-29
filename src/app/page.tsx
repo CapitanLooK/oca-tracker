@@ -10,9 +10,9 @@ import { thName } from "./utils/constants/constants";
 
 export default function Home() {
   const [formData, setFormData] = useState({
-    cuil: "",
+    cuit: "",
     dni: "",
-    tracking: "",
+    parcel: "",
   });
   const [trackingInfo, setTrackingInfo] = useState<any>(null);
   const [trackingArray, setTrackingArray] = useState<any[]>([]);
@@ -31,8 +31,8 @@ export default function Home() {
     try {
       const data = await fetchTrackingInfo({
         clientId: formData.dni,
-        cuit: formData.cuil,
-        parcel: formData.tracking,
+        cuit: formData.cuit,
+        parcel: formData.parcel,
       });
       setTrackingInfo(data);
     } catch (err) {

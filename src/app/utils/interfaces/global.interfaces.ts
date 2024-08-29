@@ -3,9 +3,9 @@ export interface IFormProps {
     handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onHandleClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
     formData: {
-        cuil: string;
+        cuit: string;
         dni: string;
-        tracking: string;
+        parcel: string;
     };
 }
 
@@ -28,3 +28,21 @@ export interface ITableData {
 export interface IProps {
     xmlString: string;
   }
+
+export interface IButtonProps {
+  text: string;
+  onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
+  classname?: string;
+};
+
+export interface IInputProps{
+  label: string;
+  type: string;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  validate: (value: string) => string;
+  disabled?: boolean;
+  placeholder?: string;
+  classname?: string;
+};
